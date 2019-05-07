@@ -6,8 +6,8 @@ var mongojs = require("mongojs");
 
 var app = express();
 
-var databaseURL = "news";
-var collection = ["scrapedNews"];
+var databaseUrl = "news";
+var collections = ["scrapedNews"];
 
 var db = mongojs(databaseUrl, collections);
 
@@ -46,8 +46,6 @@ axios.get("https://www.npr.org/sections/world/").then(function(response) {
 
 var $ = cheerio.load(response.data);
 
-// Array to hold scraped data
-var results = [];
 
 // Scrape all titles with h2 tag, grab text, push to results.  Console log
   $("h2.title").each(function(i, element) {
