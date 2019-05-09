@@ -1,3 +1,12 @@
+//Pseudo Code
+
+//Set up dependencies
+//Set up DB and declare DB name as databaseUrl and declare name of collection
+//Use axios to scrape NPR DB and save in Cheerio variable.
+//Pull title, link, and summary and insert to collection in Mongo DB
+//Display scraped data on html page
+//Allow user to comment- add comment to DB entry for that news article
+
 var cheerio = require("cheerio");
 var axios = require("axios");
 
@@ -18,6 +27,26 @@ db.on("error", function(error) {
   console.log("Database Error:", error);
 });
 
+app.get("/", function(req, res) {
+  res.send("Add 'scrape' to the URL to scrape today's NPR Headlines to Mongo!");
+});
+
+
+app.get("/all", function(req, res) {
+  // Find all results from the scrapedData collection in the db
+  db.scrapedData.find({}, function(error, found) {
+    // Throw any errors to the console
+      if (error) {
+        console.log(error);
+      }
+      // If there are no errors, send the data to the browser as json
+      else {
+        res.json(found);
+      }
+    });
+  });
+  
+
 // Use axios to search NPR site and scrape into MongoDB
 
 app.get("/scrape", function(req, res) {
@@ -36,7 +65,7 @@ var $ = cheerio.load(response.data);
     //var summary = $(element)
 
     if (title) {
-      // Insert the data in the scrapedData db
+      // Insert data to Mongo "scraped" collection in News
       db.scraped.insert({
         title: title,
         link: link,
@@ -44,11 +73,10 @@ var $ = cheerio.load(response.data);
       },
       function(err, inserted) {
         if (err) {
-          // Log the error if one is encountered during the query
+          //log errors
           console.log(err);
         }
         else {
-          // Otherwise, log the inserted data
           console.log(inserted);
         }
       });
